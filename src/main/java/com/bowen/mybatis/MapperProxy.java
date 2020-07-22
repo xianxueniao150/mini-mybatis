@@ -19,25 +19,25 @@ import java.util.regex.Pattern;
  * @create: 2020-07-20 22:00
  * @description:
  **/
-public class MapperProxy implements InvocationHandler {
+public class MapperProxy<T> implements InvocationHandler {
 
-    private Object target;
+    private Class<T> target;
 
-    public MapperProxy(Object target) {
+    public  MapperProxy(Class<T> target) {
         this.target = target;
     }
 
     //返回代理对象
     @SuppressWarnings("unchecked")
-    public <T> T getProxy() {
+    public  T getProxy() {
 
         /**
          * 参数一：被代理对象的类加载器
          * 参数二：被代理对象的接口
          * 参数三：InvocationHandler实现类
          */
-        return (T) Proxy.newProxyInstance(target.getClass().getClassLoader(),
-                target.getClass().getInterfaces(),
+        return (T) Proxy.newProxyInstance(target.getClassLoader(),
+                new Class[] {this.target},
                 this);
     }
 

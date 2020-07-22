@@ -21,26 +21,12 @@ public class TestMain{
      */
     public static void main(String[] args){
         ConfigFilesLoad.loadFile("conf.properties");
-        UserMapper userMapper = new MapperProxy(new UserMapper() {
-            @Override
-            public User getUser(String id) {
-                return null;
-            }
 
-            @Override
-            public List<User> getAll() {
-                return null;
-            }
-
-            @Override
-            public void updateUser(String id) {
-
-            }
-        }).getProxy();
-//        List<User> all = userMapper.getAll();
-//        System.out.println(all);
-        User user = userMapper.getUser("1");
-        System.out.println(user);
+        UserMapper userMapper = new MapperProxy<>(UserMapper.class).getProxy();
+        List<User> all = userMapper.getAll();
+        System.out.println(all);
+//        User user = userMapper.getUser("1");
+//        System.out.println(user);
 
 
         /*SqlSessionFactory factory = new SqlSessionFactoryBuilder().build("conf.properties");
