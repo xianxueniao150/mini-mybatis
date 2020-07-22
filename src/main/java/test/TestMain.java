@@ -5,8 +5,6 @@ import com.bowen.mybatis.MapperProxy;
 import test.bean.User;
 import test.dao.UserMapper;
 
-import java.util.List;
-
 /**
  * 
  */
@@ -23,10 +21,10 @@ public class TestMain{
         ConfigFilesLoad.loadFile("conf.properties");
 
         UserMapper userMapper = new MapperProxy<>(UserMapper.class).getProxy();
-        List<User> all = userMapper.getAll();
-        System.out.println(all);
-//        User user = userMapper.getUser("1");
-//        System.out.println(user);
+//        List<User> all = userMapper.getAll();
+//        System.out.println(all);
+        User user = userMapper.getUser("1");
+        System.out.println(user);
 
 
         /*SqlSessionFactory factory = new SqlSessionFactoryBuilder().build("conf.properties");
