@@ -5,6 +5,9 @@ import com.bowen.mybatis.MapperProxy;
 import test.bean.User;
 import test.dao.UserMapper;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 
  */
@@ -23,8 +26,13 @@ public class TestMain{
         UserMapper userMapper = new MapperProxy<>(UserMapper.class).getProxy();
 //        List<User> all = userMapper.getAll();
 //        System.out.println(all);
-        User user = userMapper.getUser("1");
-        System.out.println(user);
+//        User user = userMapper.getUser(1);
+//        System.out.println(user);
+        Map<String,Object> map = new HashMap<>();
+        map.put("name","张三2");
+        map.put("id",1);
+        User userByMap = userMapper.getUserByMap(map);
+        System.out.println(userByMap);
 
 
         /*SqlSessionFactory factory = new SqlSessionFactoryBuilder().build("conf.properties");

@@ -9,6 +9,7 @@ import java.lang.reflect.Field;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,6 +30,15 @@ public class SimpleExecutor {
      * #{}正则匹配
      */
     private static Pattern param_pattern = Pattern.compile("#\\{([^\\{\\}]*)\\}");
+
+    public static void main(String[] args) {
+        String originalSql = " #{cat}  ";
+        originalSql = originalSql.trim();
+        Matcher matcher = param_pattern.matcher(originalSql);
+//        matcher.
+        String newSql = matcher.replaceAll("?");
+        System.out.println(newSql);
+    }
 
     public static Connection getConnection() {
         return connection;
@@ -60,15 +70,26 @@ public class SimpleExecutor {
 
         String originalSql = mappedStatement.getSql();
         originalSql = originalSql.trim();
-        Matcher matcher = param_pattern.matcher(originalSql);
-        String newSql = matcher.replaceAll("?");
-        PreparedStatement prepareStatement = connection.prepareStatement(newSql);
+//        Map<String,Object> map = new HashMap<>();
+        GenericTokenParser parser = new GenericTokenParser("#{", "}",mappedStatement);
+        String sql = parser.parse(originalSql);
+        PreparedStatement prepareStatement = connection.prepareStatement(sql);
 
-        //5.实例化ParameterHandler，将SQL语句中？参数化
+        //5.目前只支持一个参数，该参数可以为字符串
         if(params!=null){
-            for (int i = 0; i < params.length; i++) {
-                //Mapper保证传入参数类型匹配，这里就不做类型转换了
-                prepareStatement.setObject(i + 1, params[i]);
+            if(params.length==1){
+                Object param = params[0];
+                if ((Map.class).isAssignableFrom(param.getClass())) {
+                    Map paramMap = (Map)param;
+                    for (int j = 0; j < mappedStatement.getParameters().size(); j++) {
+                        String parameter = mappedStatement.getParameters().get(j);
+                        Object o = paramMap.get(parameter);
+                        prepareStatement.setObject(j+1 , o);
+                    }
+                }else {
+                    //Mapper保证传入参数类型匹配，这里就不做类型转换了
+                    prepareStatement.setObject(1, params[0]);
+                }
             }
         }
 

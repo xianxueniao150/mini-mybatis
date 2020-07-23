@@ -6,6 +6,7 @@ package test.dao;
 import test.bean.User;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserMapper{
 
@@ -16,7 +17,9 @@ public interface UserMapper{
      * @return 
      * @see 
      */
-    User getUser(String id);
+    User getUser(Integer id);
+
+    User getUserByMap(Map<String , Object> map);
     
     /**
      * 获取所有用户
