@@ -16,7 +16,7 @@ import java.util.Map;
 public class TestMain{
 
     /**
-     * main
+     * mainTEST
      *
      * @param args
      */
