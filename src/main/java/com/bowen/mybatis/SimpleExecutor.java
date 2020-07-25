@@ -3,15 +3,16 @@ package com.bowen.mybatis;
 
 import com.bowen.mybatis.constant.Constant;
 import com.bowen.mybatis.entity.MappedStatement;
+import com.bowen.mybatis.parsing.GenericTokenParser;
+import com.bowen.mybatis.parsing.VariableTokenHandler;
 import com.bowen.mybatis.util.CommonUtis;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * mybatis执行器
@@ -19,26 +20,13 @@ import java.util.regex.Pattern;
  * @author PLF
  * @date 2019年3月6日
  */
+@Slf4j
 public class SimpleExecutor {
 
     /**
      * 数据库连接
      */
     private static Connection connection;
-
-    /**
-     * #{}正则匹配
-     */
-    private static Pattern param_pattern = Pattern.compile("#\\{([^\\{\\}]*)\\}");
-
-    public static void main(String[] args) {
-        String originalSql = " #{cat}  ";
-        originalSql = originalSql.trim();
-        Matcher matcher = param_pattern.matcher(originalSql);
-//        matcher.
-        String newSql = matcher.replaceAll("?");
-        System.out.println(newSql);
-    }
 
     public static Connection getConnection() {
         return connection;
@@ -68,12 +56,23 @@ public class SimpleExecutor {
         //1.获取数据库连接
         Connection connection = getConnection();
 
-        String originalSql = mappedStatement.getSql();
-        originalSql = originalSql.trim();
-//        Map<String,Object> map = new HashMap<>();
-        GenericTokenParser parser = new GenericTokenParser("#{", "}",mappedStatement);
-        String sql = parser.parse(originalSql);
-        PreparedStatement prepareStatement = connection.prepareStatement(sql);
+        String originSql = mappedStatement.getSql();
+        if(params!=null){
+            if(params.length==1){
+                Object param = params[0];
+                if ((Map.class).isAssignableFrom(param.getClass())) {
+                    Map paramMap = (Map) param;
+                    VariableTokenHandler tokenHandler = new VariableTokenHandler(paramMap);
+                    GenericTokenParser tokenParser = new GenericTokenParser("${", "}", tokenHandler);
+                    originSql = tokenParser.parse(originSql);
+                    log.debug(originSql);
+                }
+            }
+        }
+
+        PreparedStatement prepareStatement = connection.prepareStatement(originSql);
+
+
 
         //5.目前只支持一个参数，该参数可以为字符串
         if(params!=null){
@@ -92,7 +91,6 @@ public class SimpleExecutor {
                 }
             }
         }
-
 
         //6.执行SQL，得到结果集ResultSet
         ResultSet resultSet = prepareStatement.executeQuery();

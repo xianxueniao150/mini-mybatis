@@ -31,6 +31,7 @@ public class TestMain{
         Map<String,Object> map = new HashMap<>();
         map.put("name","张三2");
         map.put("id",1);
+        map.put("condition","1=1");
         User userByMap = userMapper.getUserByMap(map);
         System.out.println(userByMap);
 

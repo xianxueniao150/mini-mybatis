@@ -1,9 +1,11 @@
 package com.bowen.mybatis.util;
 
 
+import com.bowen.mybatis.parsing.GenericTokenParser;
 import com.bowen.mybatis.constant.Constant;
 import com.bowen.mybatis.entity.MappedStatement;
 import com.bowen.mybatis.enums.SqlType;
+import com.bowen.mybatis.parsing.ParameterMappingTokenHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -65,7 +67,12 @@ public final class XmlUtil {
 
             statement.setSqlId(sqlId);
             statement.setNamespace(namespace);
-            statement.setSql(CommonUtis.stringTrim(element.getStringValue()));
+            String originalSql = CommonUtis.stringTrim(element.getStringValue());
+            ParameterMappingTokenHandler tokenHandler = new ParameterMappingTokenHandler(statement);
+            GenericTokenParser parser = new GenericTokenParser("#{", "}",tokenHandler);
+            String sql = parser.parse(originalSql);
+            statement.setSql(sql);
+
             mappedStatements.put(sqlId, statement);
             log.debug("statement:{}", statement);
         }

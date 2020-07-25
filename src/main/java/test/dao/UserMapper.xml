@@ -10,7 +10,7 @@
 	</select>
 
 	<select id="getUserByMap" resultType="test.bean.User">
-		select * from user where name=#{name} and id=#{id}
+		select * from user where name=#{name} and id=#{id} and ${condition}
 	</select>
 
 	<update id="updateUser">

@@ -1,8 +1,4 @@
-package com.bowen.mybatis;
-
-import com.bowen.mybatis.entity.MappedStatement;
-
-import java.util.List;
+package com.bowen.mybatis.parsing;
 
 /**
  * @author: zhaobowen
@@ -13,12 +9,13 @@ public class GenericTokenParser {
     //有一个开始和结束记号
     private final String openToken;
     private final String closeToken;
-    private MappedStatement mappedStatement;
+    //记号处理器
+    private final TokenHandler tokenHandler;
 
-    public GenericTokenParser(String openToken, String closeToken,  MappedStatement mappedStatement ) {
+    public GenericTokenParser(String openToken, String closeToken,  TokenHandler tokenHandler ) {
         this.openToken = openToken;
         this.closeToken = closeToken;
-        this.mappedStatement = mappedStatement;
+        this.tokenHandler = tokenHandler;
     }
 
 
@@ -40,9 +37,7 @@ public class GenericTokenParser {
                     offset = start + openToken.length();
                     String content = new String(src, offset, end - offset);
                     //得到一对大括号里的字符串后，调用handler.handleToken,比如替换变量这种功能
-                    List<String> parameters = mappedStatement.getParameters();
-                    parameters.add(content);
-                    builder.append("?");
+                    builder.append(tokenHandler.handleToken(content));
                     offset = end + closeToken.length();
                 }
                 start = text.indexOf(openToken, offset);
