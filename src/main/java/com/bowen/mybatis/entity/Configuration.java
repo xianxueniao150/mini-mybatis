@@ -12,23 +12,16 @@ import java.util.Map;
  **/
 @Data
 public class Configuration {
-    private static MyDataSource dataSource;
-    private static Map<String, MappedStatement> mappedStatements = new HashMap<>();
+    private  MyDataSource dataSource;
+    private  Map<String, MappedStatement> mappedStatements = new HashMap<>();
 
 
-    public static void setDataSource(MyDataSource dataSource) {
-        Configuration.dataSource = dataSource;
-    }
-
-    public static MyDataSource getDataSource() {
-        return dataSource;
-    }
-
-    public static MappedStatement getMappedStatement(String id) {
-        return mappedStatements.get(id);
-    }
-
-    public static MappedStatement addMappedStatement(String id, MappedStatement mappedStatement) {
+    public  MappedStatement addMappedStatement(String id, MappedStatement mappedStatement) {
         return mappedStatements.put(id,mappedStatement);
+    }
+
+
+    public MappedStatement getMappedStatement(String statementId) {
+        return mappedStatements.get(statementId);
     }
 }

@@ -17,12 +17,14 @@ import java.util.Collection;
 public class MapperProxy<T> implements InvocationHandler {
 
     private Class<T> target;
-
     private SimpleExecutor simpleExecutor;
+    private Configuration configuration;
 
-    public  MapperProxy(Class<T> target) {
+
+    public  MapperProxy(Class<T> target, Configuration configuration) {
         this.target = target;
-        this.simpleExecutor=new SimpleExecutor();
+        this.simpleExecutor=new SimpleExecutor(configuration);
+        this.configuration=configuration;
     }
 
     //返回代理对象
@@ -60,7 +62,7 @@ public class MapperProxy<T> implements InvocationHandler {
      */
     private Object execute(Method method, Object[] args) throws ClassNotFoundException, SQLException, InstantiationException, IllegalAccessException {
         String statementId = method.getDeclaringClass().getName() + "." + method.getName();
-        MappedStatement ms = Configuration.getMappedStatement(statementId);
+        MappedStatement ms = configuration.getMappedStatement(statementId);
 
         Object result = null;
         switch (ms.getSqlCommandType()) {

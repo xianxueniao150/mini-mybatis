@@ -23,35 +23,33 @@ import java.util.Map;
  */
 @Slf4j
 public class SimpleExecutor {
+    private Configuration configuration;
 
     /**
      * 数据库连接
      */
-    private static Connection connection;
+    private  Connection connection;
 
-    public static Connection getConnection() {
-        return connection;
+    public SimpleExecutor(Configuration configuration) {
+        this.configuration = configuration;
     }
 
-    static {
-        initConnect();
-    }
 
-    private static void initConnect() {
-
+    public  Connection getConnection() {
+        MyDataSource dataSource = configuration.getDataSource();
 //        String driver = ConfigFilesLoad.getProperty(Constant.DB_DRIVER_CONF);
-        MyDataSource dataSource = Configuration.getDataSource();
         String url = dataSource.getUrl();
         String username = dataSource.getUsername();
         String password = dataSource.getPassword();
-
         try {
             connection = DriverManager.getConnection(url, username, password);
             System.out.println("数据库连接成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return connection;
     }
+
 
     public PreparedStatement prepareSql(MappedStatement mappedStatement, Object[] params) throws SQLException {
         //1.获取数据库连接

@@ -1,7 +1,7 @@
 package test;
 
-import com.bowen.mybatis.MapperProxy;
-import com.bowen.mybatis.xml.XMLConfigBuilder;
+import com.bowen.mybatis.session.DefaultSqlSession;
+import com.bowen.mybatis.session.DefaultSqlSessionFactory;
 import test.dao.UserMapper;
 
 /**
@@ -18,9 +18,11 @@ public class TestMain{
      * @param args
      */
     public static void main(String[] args){
-        XMLConfigBuilder.loadConfig("MybatisConfig.xml");
 
-        UserMapper userMapper = new MapperProxy<>(UserMapper.class).getProxy();
+        DefaultSqlSessionFactory sqlSessionFactory = new DefaultSqlSessionFactory();
+        sqlSessionFactory.loadConfig("MybatisConfig.xml");
+        DefaultSqlSession session = sqlSessionFactory.openSession();
+        UserMapper userMapper = session.getMapper(UserMapper.class);
 //        List<User> all = userMapper.getAll();
 //        System.out.println(all);
 //        User user = userMapper.getUser(1);

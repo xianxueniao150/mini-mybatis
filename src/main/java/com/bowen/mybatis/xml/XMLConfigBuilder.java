@@ -20,13 +20,13 @@ import java.util.Iterator;
  **/
 @Slf4j
 public class XMLConfigBuilder {
+    private Configuration configuration;
 
-//    public static void main(String[] args) {
-//        loadConfig("MybatisConfig.xml");
-//    }
+    public XMLConfigBuilder(Configuration configuration) {
+        this.configuration=configuration;
+    }
+    public  void buildConfig(String fileName) {
 
-
-    public static void loadConfig(String fileName) {
         InputStream inputStream = XMLConfigBuilder.class.getClassLoader().getResourceAsStream(fileName);
 
         // 创建一个读取器
@@ -69,15 +69,16 @@ public class XMLConfigBuilder {
         }
     }
 
-    private static void mapperElement(Element element) {
+    private  void mapperElement(Element element) {
+        XMLMapperBuilder xmlMapperBuilder = new XMLMapperBuilder(configuration);
         Iterator<Element> mapper = element.elementIterator("mapper");
         while(mapper.hasNext()){
             Element mapperEle = mapper.next();
-            XMLMapperBuilder.readMapperXml(mapperEle.attributeValue("resource"));
+            xmlMapperBuilder.readMapperXml(mapperEle.attributeValue("resource"));
         }
     }
 
-    private  static void environmentsElement(Element element) {
+    private   void environmentsElement(Element element) {
         MyDataSource myDataSource = new MyDataSource();
         Iterator<Element> property = element.elementIterator("property");
         while(property.hasNext()){
@@ -98,7 +99,7 @@ public class XMLConfigBuilder {
                     break;
             }
         }
-        Configuration.setDataSource(myDataSource);
+        configuration.setDataSource(myDataSource);
     }
 
 

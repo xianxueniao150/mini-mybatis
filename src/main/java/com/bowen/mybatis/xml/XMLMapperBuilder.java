@@ -24,7 +24,13 @@ import java.net.URL;
 @Slf4j
 public class XMLMapperBuilder {
 
-    public static void readMapperXml(String filePath) {
+    private Configuration configuration;
+
+    public XMLMapperBuilder(Configuration configuration) {
+        this.configuration=configuration;
+    }
+
+    public  void readMapperXml(String filePath) {
         URL resources = XMLMapperBuilder.class.getClassLoader().getResource(filePath);
 
         File file = new File(resources.getFile());
@@ -78,7 +84,7 @@ public class XMLMapperBuilder {
             String sql = parser.parse(originalSql);
             statement.setSql(sql);
 
-            Configuration.addMappedStatement(sqlId, statement);
+            configuration.addMappedStatement(sqlId, statement);
             log.debug("statement:{}", statement);
         }
     }
