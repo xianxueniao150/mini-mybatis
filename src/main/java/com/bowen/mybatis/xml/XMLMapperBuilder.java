@@ -1,11 +1,12 @@
-package com.bowen.mybatis.util;
+package com.bowen.mybatis.xml;
 
-
-import com.bowen.mybatis.parsing.GenericTokenParser;
 import com.bowen.mybatis.constant.Constant;
+import com.bowen.mybatis.entity.Configuration;
 import com.bowen.mybatis.entity.MappedStatement;
 import com.bowen.mybatis.enums.SqlType;
+import com.bowen.mybatis.parsing.GenericTokenParser;
 import com.bowen.mybatis.parsing.ParameterMappingTokenHandler;
+import com.bowen.mybatis.util.CommonUtis;
 import lombok.extern.slf4j.Slf4j;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -13,18 +14,21 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import java.io.File;
-import java.util.Map;
+import java.net.URL;
 
 /**
- * XmlUtil.java
- *
- * @author PLF
- * @date 2019年3月7日
- */
+ * @author: zhaobowen
+ * @create: 2020-07-27 11:38
+ * @description:
+ **/
 @Slf4j
-public final class XmlUtil {
+public class XMLMapperBuilder {
 
-    public static void readMapperXml(File file, Map<String, MappedStatement> mappedStatements) {
+    public static void readMapperXml(String filePath) {
+        URL resources = XMLMapperBuilder.class.getClassLoader().getResource(filePath);
+
+        File file = new File(resources.getFile());
+
         // 创建一个读取器
         SAXReader saxReader = new SAXReader();
         saxReader.setEncoding(Constant.CHARSET_UTF8);
@@ -57,6 +61,7 @@ public final class XmlUtil {
                 statement.setResultType(resultType);
                 statement.setSqlCommandType(SqlType.SELECT);
             } else if (SqlType.UPDATE.value().equals(eleName)) {
+                statement.setSqlCommandType(SqlType.UPDATE);
             } else {
                 // 其他标签自己实现
                 System.err.println("不支持此xml标签解析:" + eleName);
@@ -73,9 +78,8 @@ public final class XmlUtil {
             String sql = parser.parse(originalSql);
             statement.setSql(sql);
 
-            mappedStatements.put(sqlId, statement);
+            Configuration.addMappedStatement(sqlId, statement);
             log.debug("statement:{}", statement);
         }
     }
-
 }

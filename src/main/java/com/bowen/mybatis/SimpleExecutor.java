@@ -1,8 +1,9 @@
 package com.bowen.mybatis;
 
 
-import com.bowen.mybatis.constant.Constant;
+import com.bowen.mybatis.entity.Configuration;
 import com.bowen.mybatis.entity.MappedStatement;
+import com.bowen.mybatis.entity.MyDataSource;
 import com.bowen.mybatis.parsing.GenericTokenParser;
 import com.bowen.mybatis.parsing.VariableTokenHandler;
 import com.bowen.mybatis.util.CommonUtis;
@@ -39,9 +40,10 @@ public class SimpleExecutor {
     private static void initConnect() {
 
 //        String driver = ConfigFilesLoad.getProperty(Constant.DB_DRIVER_CONF);
-        String url = ConfigFilesLoad.getProperty(Constant.DB_URL_CONF);
-        String username = ConfigFilesLoad.getProperty(Constant.DB_USERNAME_CONF);
-        String password = ConfigFilesLoad.getProperty(Constant.db_PASSWORD);
+        MyDataSource dataSource = Configuration.getDataSource();
+        String url = dataSource.getUrl();
+        String username = dataSource.getUsername();
+        String password = dataSource.getPassword();
 
         try {
             connection = DriverManager.getConnection(url, username, password);
@@ -51,8 +53,7 @@ public class SimpleExecutor {
         }
     }
 
-    public  <E> List<E> selectList(MappedStatement mappedStatement, Object[] params) throws SQLException, ClassNotFoundException,
-            IllegalAccessException, InstantiationException {
+    public PreparedStatement prepareSql(MappedStatement mappedStatement, Object[] params) throws SQLException {
         //1.获取数据库连接
         Connection connection = getConnection();
 
@@ -73,7 +74,6 @@ public class SimpleExecutor {
         PreparedStatement prepareStatement = connection.prepareStatement(originSql);
 
 
-
         //5.目前只支持一个参数，该参数可以为字符串
         if(params!=null){
             if(params.length==1){
@@ -92,8 +92,15 @@ public class SimpleExecutor {
             }
         }
 
+      return prepareStatement;
+    }
+
+    public  <E> List<E> selectList(MappedStatement mappedStatement, Object[] params) throws SQLException, ClassNotFoundException,
+            IllegalAccessException, InstantiationException {
+        PreparedStatement preparedStatement = prepareSql(mappedStatement, params);
+
         //6.执行SQL，得到结果集ResultSet
-        ResultSet resultSet = prepareStatement.executeQuery();
+        ResultSet resultSet = preparedStatement.executeQuery();
 
         //7.实例化ResultSetHandler，通过反射将ResultSet中结果设置到目标resultType对象中
         List<E> result = new ArrayList<>();
@@ -134,5 +141,12 @@ public class SimpleExecutor {
     public <T> T  selectOne(MappedStatement ms, Object[] args) throws ClassNotFoundException, SQLException, InstantiationException, IllegalAccessException {
         List<T> results = this.selectList(ms, args);
         return CommonUtis.isNotEmpty(results) ? results.get(0) : null;
+    }
+
+    public Object update(MappedStatement mappedStatement, Object[] params) throws SQLException {
+        PreparedStatement preparedStatement = prepareSql(mappedStatement, params);
+        //6.执行SQL，得到结果集ResultSet
+        int result = preparedStatement.executeUpdate();
+        return result;
     }
 }

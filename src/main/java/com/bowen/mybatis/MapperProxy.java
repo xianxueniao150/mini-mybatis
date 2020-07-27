@@ -1,5 +1,6 @@
 package com.bowen.mybatis;
 
+import com.bowen.mybatis.entity.Configuration;
 import com.bowen.mybatis.entity.MappedStatement;
 
 import java.lang.reflect.InvocationHandler;
@@ -59,7 +60,7 @@ public class MapperProxy<T> implements InvocationHandler {
      */
     private Object execute(Method method, Object[] args) throws ClassNotFoundException, SQLException, InstantiationException, IllegalAccessException {
         String statementId = method.getDeclaringClass().getName() + "." + method.getName();
-        MappedStatement ms = ConfigFilesLoad.getMappedStatement(statementId);
+        MappedStatement ms = Configuration.getMappedStatement(statementId);
 
         Object result = null;
         switch (ms.getSqlCommandType()) {
@@ -77,7 +78,7 @@ public class MapperProxy<T> implements InvocationHandler {
                 break;
             }
             case UPDATE: {
-                break;
+                result =simpleExecutor.update(ms,args);
             }
             default: {
                 //TODO 其他方法待实现

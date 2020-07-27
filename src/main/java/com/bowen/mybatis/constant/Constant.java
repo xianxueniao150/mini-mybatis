@@ -13,6 +13,13 @@ public interface Constant {
 
     String db_PASSWORD = "db.password";
 
+    String XML_CONFIG_ROOT_LABEL = "configuration";
+
+    String XML_CONFIG_TYPEHANDLERS = "typeHandlers";
+
+    String XML_CONFIG_TYPEHANDLER = "typeHandler";
+
+
     /************ mapper xml  ****************/
 
     String CHARSET_UTF8 = "UTF-8";

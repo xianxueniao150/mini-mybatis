@@ -34,5 +34,5 @@ public interface UserMapper{
      * 
      * @param id 
      */
-    void updateUser(String id);
+    Integer updateUser(String id);
 }
