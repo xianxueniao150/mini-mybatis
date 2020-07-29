@@ -18,7 +18,7 @@ public final class MappedStatement {
     /** sql语句，对应源码的sqlSource */
     private String sql;
 
-    private List<String> parameters=new ArrayList<>();
+    private List<ParameterMapping> parameters=new ArrayList<>();
 
     /** 返回类型 */
     private String resultType;

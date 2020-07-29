@@ -3,6 +3,7 @@ package com.bowen.mybatis.xml;
 import com.bowen.mybatis.constant.Constant;
 import com.bowen.mybatis.entity.Configuration;
 import com.bowen.mybatis.entity.MyDataSource;
+import com.bowen.mybatis.entity.TypeHandlerRegistry;
 import com.bowen.mybatis.util.ClassUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.dom4j.Document;
@@ -20,7 +21,10 @@ import java.util.Iterator;
  **/
 @Slf4j
 public class XMLConfigBuilder {
+
     private Configuration configuration;
+
+
 
     public XMLConfigBuilder(Configuration configuration) {
         this.configuration=configuration;
@@ -103,13 +107,14 @@ public class XMLConfigBuilder {
     }
 
 
-    private static void typeHandlerElement(Element element) {
+    private  void typeHandlerElement(Element element) {
+        TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
         Iterator<Element> typeHandler = element.elementIterator("typeHandler");
         while(typeHandler.hasNext()){
             Element handler = typeHandler.next();
             String handlerTypeName = handler.attributeValue("handler");
             Class<?> typeHandlerClass = ClassUtil.loadClass(handlerTypeName);
-//            typeHandlerRegistry.register(typeHandlerClass);
+            typeHandlerRegistry.register(typeHandlerClass);
         }
     }
 }

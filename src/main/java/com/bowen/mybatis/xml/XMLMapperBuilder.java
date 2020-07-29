@@ -68,6 +68,8 @@ public class XMLMapperBuilder {
                 statement.setSqlCommandType(SqlType.SELECT);
             } else if (SqlType.UPDATE.value().equals(eleName)) {
                 statement.setSqlCommandType(SqlType.UPDATE);
+            } else if (SqlType.INSERT.value().equals(eleName)){
+                statement.setSqlCommandType(SqlType.INSERT);
             } else {
                 // 其他标签自己实现
                 System.err.println("不支持此xml标签解析:" + eleName);

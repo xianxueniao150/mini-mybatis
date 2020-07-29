@@ -1,6 +1,7 @@
 package com.bowen.mybatis.parsing;
 
 import com.bowen.mybatis.entity.MappedStatement;
+import com.bowen.mybatis.entity.ParameterMapping;
 
 import java.util.List;
 
@@ -16,8 +17,9 @@ public  class ParameterMappingTokenHandler  implements TokenHandler {
 
   @Override
   public String handleToken(String content) {
-    List<String> parameters = mappedStatement.getParameters();
-    parameters.add(content);
+    List<ParameterMapping> parameters = mappedStatement.getParameters();
+    ParameterMapping parameterMapping = new ParameterMapping(content);
+    parameters.add(parameterMapping);
     //如何替换很简单，永远是一个问号，但是参数的信息要记录在parameterMappings里面供后续使用
     return "?";
   }

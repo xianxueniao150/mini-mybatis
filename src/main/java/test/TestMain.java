@@ -1,7 +1,9 @@
 package test;
 
+import com.alibaba.fastjson.JSONObject;
 import com.bowen.mybatis.session.DefaultSqlSession;
 import com.bowen.mybatis.session.DefaultSqlSessionFactory;
+import test.bean.User;
 import test.dao.UserMapper;
 
 /**
@@ -23,6 +25,13 @@ public class TestMain{
         sqlSessionFactory.loadConfig("MybatisConfig.xml");
         DefaultSqlSession session = sqlSessionFactory.openSession();
         UserMapper userMapper = session.getMapper(UserMapper.class);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("favor",5);
+        User user = new User(18, null);
+        Integer integer = userMapper.addUser(user);
+        System.out.println(integer);
+
 //        List<User> all = userMapper.getAll();
 //        System.out.println(all);
 //        User user = userMapper.getUser(1);
@@ -33,8 +42,8 @@ public class TestMain{
 //        map.put("condition","1=1");
 //        User userByMap = userMapper.getUserByMap(map);
 //        System.out.println(userByMap);
-        Integer integer = userMapper.updateUser("1");
-        System.out.println(integer);
+//        Integer integer = userMapper.updateUser("1");
+//        System.out.println(integer);
 
 
         /*SqlSessionFactory factory = new SqlSessionFactoryBuilder().build("conf.properties");

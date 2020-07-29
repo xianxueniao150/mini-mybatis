@@ -13,6 +13,10 @@
 		select * from user where name=#{name} and id=#{id} and ${condition}
 	</select>
 
+	<insert id="addUser">
+		insert into user(id,name) values (#{id},#{name})
+	</insert>
+
 	<update id="updateUser">
 		update user set name = '张三5' where id = #{id}
 	</update>

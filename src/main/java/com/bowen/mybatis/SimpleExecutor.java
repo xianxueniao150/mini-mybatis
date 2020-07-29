@@ -1,11 +1,12 @@
 package com.bowen.mybatis;
 
 
-import com.bowen.mybatis.entity.Configuration;
-import com.bowen.mybatis.entity.MappedStatement;
-import com.bowen.mybatis.entity.MyDataSource;
+import com.bowen.mybatis.entity.*;
+import com.bowen.mybatis.enums.JdbcType;
 import com.bowen.mybatis.parsing.GenericTokenParser;
 import com.bowen.mybatis.parsing.VariableTokenHandler;
+import com.bowen.mybatis.reflection.MetaObject;
+import com.bowen.mybatis.typehandler.TypeHandler;
 import com.bowen.mybatis.util.CommonUtis;
 import lombok.extern.slf4j.Slf4j;
 
@@ -52,45 +53,61 @@ public class SimpleExecutor {
 
 
     public PreparedStatement prepareSql(MappedStatement mappedStatement, Object[] params) throws SQLException {
+        Object parameterObject=null;
+        if(params.length>1){
+            throw new RuntimeException("目前只支持一个参数，该参数可以为map");
+        }
+        if(params.length==1){
+            parameterObject=params[0];
+        }
+
         //1.获取数据库连接
         Connection connection = getConnection();
-
         String originSql = mappedStatement.getSql();
-        if(params!=null){
-            if(params.length==1){
-                Object param = params[0];
-                if ((Map.class).isAssignableFrom(param.getClass())) {
-                    Map paramMap = (Map) param;
-                    VariableTokenHandler tokenHandler = new VariableTokenHandler(paramMap);
-                    GenericTokenParser tokenParser = new GenericTokenParser("${", "}", tokenHandler);
-                    originSql = tokenParser.parse(originSql);
-                    log.debug(originSql);
-                }
+        if(parameterObject!=null){
+            if ((Map.class).isAssignableFrom(parameterObject.getClass())) {
+                Map paramMap = (Map) parameterObject;
+                VariableTokenHandler tokenHandler = new VariableTokenHandler(paramMap);
+                GenericTokenParser tokenParser = new GenericTokenParser("${", "}", tokenHandler);
+                originSql = tokenParser.parse(originSql);
+                log.debug(originSql);
             }
         }
 
         PreparedStatement prepareStatement = connection.prepareStatement(originSql);
 
 
-        //5.目前只支持一个参数，该参数可以为字符串
-        if(params!=null){
-            if(params.length==1){
-                Object param = params[0];
-                if ((Map.class).isAssignableFrom(param.getClass())) {
-                    Map paramMap = (Map)param;
-                    for (int j = 0; j < mappedStatement.getParameters().size(); j++) {
-                        String parameter = mappedStatement.getParameters().get(j);
-                        Object o = paramMap.get(parameter);
-                        prepareStatement.setObject(j+1 , o);
-                    }
-                }else {
-                    //Mapper保证传入参数类型匹配，这里就不做类型转换了
-                    prepareStatement.setObject(1, params[0]);
-                }
+       //5.目前只支持一个参数，该参数可以为字符串
+        for (int j = 0; j < mappedStatement.getParameters().size(); j++) {
+            ParameterMapping parameter = mappedStatement.getParameters().get(j);
+            JdbcType jdbcType = parameter.getJdbcType();
+            Object value = null;
+            if(parameterObject!=null){
+                String propertyName = parameter.getProperty();
+                MetaObject metaObject =  new MetaObject(parameterObject);
+                value = metaObject.getValue(propertyName);
             }
+            if(value==null){
+                jdbcType=JdbcType.VARCHAR;
+            }
+            TypeHandler handler = resolveTypeHandler(value, jdbcType);
+            handler.setParameter(prepareStatement, j+1, value, jdbcType);
         }
-
       return prepareStatement;
+    }
+
+    private TypeHandler<?> resolveTypeHandler(Object value, JdbcType jdbcType) {
+        TypeHandler<?> handler;
+        if(value==null){
+            handler=TypeHandlerRegistry.getObjectTypeHandler();
+            return handler;
+        }
+        TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
+        handler = typeHandlerRegistry.getTypeHandler(value.getClass(), jdbcType);
+        if (handler == null ) {
+            handler = TypeHandlerRegistry.getObjectTypeHandler();
+        }
+        return handler;
     }
 
     public  <E> List<E> selectList(MappedStatement mappedStatement, Object[] params) throws SQLException, ClassNotFoundException,

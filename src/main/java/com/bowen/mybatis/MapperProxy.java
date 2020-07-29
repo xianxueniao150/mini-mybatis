@@ -20,7 +20,6 @@ public class MapperProxy<T> implements InvocationHandler {
     private SimpleExecutor simpleExecutor;
     private Configuration configuration;
 
-
     public  MapperProxy(Class<T> target, Configuration configuration) {
         this.target = target;
         this.simpleExecutor=new SimpleExecutor(configuration);
@@ -40,8 +39,6 @@ public class MapperProxy<T> implements InvocationHandler {
                 new Class[] {this.target},
                 this);
     }
-
-
 
 
     @Override
@@ -81,6 +78,11 @@ public class MapperProxy<T> implements InvocationHandler {
             }
             case UPDATE: {
                 result =simpleExecutor.update(ms,args);
+                break;
+            }
+            case INSERT: {
+                result =simpleExecutor.update(ms,args);
+                break;
             }
             default: {
                 //TODO 其他方法待实现
@@ -90,7 +92,4 @@ public class MapperProxy<T> implements InvocationHandler {
 
         return result;
     }
-
-
-
 }

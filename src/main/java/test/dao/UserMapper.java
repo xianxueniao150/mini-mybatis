@@ -28,6 +28,9 @@ public interface UserMapper{
      * @see 
      */
     List<User> getAll();
+
+
+    Integer addUser(User user);
     
     /**
      * 更新用户（功能未完成）

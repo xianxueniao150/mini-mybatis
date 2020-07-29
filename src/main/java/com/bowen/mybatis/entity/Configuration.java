@@ -14,6 +14,8 @@ import java.util.Map;
 public class Configuration {
     private  MyDataSource dataSource;
     private  Map<String, MappedStatement> mappedStatements = new HashMap<>();
+    protected final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
+
 
 
     public  MappedStatement addMappedStatement(String id, MappedStatement mappedStatement) {
