@@ -20,6 +20,18 @@ public class MetaObject {
     }
 
     public Object getValue(String name) {
-        return objectWrapper.get(name);
+        return objectWrapper.getBeanProperty(name);
+    }
+
+    public String findProperty(String propertyName) {
+        return objectWrapper.findProperty(propertyName);
+    }
+
+    public void setValue(String property, Object value) {
+        objectWrapper.set(property, value);
+    }
+
+    public Class<?> getSetterType(String property) {
+        return objectWrapper.getSetterType(property);
     }
 }

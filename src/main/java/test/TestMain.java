@@ -6,6 +6,8 @@ import com.bowen.mybatis.session.DefaultSqlSessionFactory;
 import test.bean.User;
 import test.dao.UserMapper;
 
+import java.util.List;
+
 /**
  * 
  */
@@ -28,12 +30,12 @@ public class TestMain{
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("favor",5);
-        User user = new User(18, null);
-        Integer integer = userMapper.addUser(user);
-        System.out.println(integer);
+        User user = new User(17, jsonObject);
+//        Integer integer = userMapper.addUser(user);
+//        System.out.println(integer);
 
-//        List<User> all = userMapper.getAll();
-//        System.out.println(all);
+        List<User> all = userMapper.getAll(user);
+        System.out.println(all);
 //        User user = userMapper.getUser(1);
 //        System.out.println(user);
 //        Map<String,Object> map = new HashMap<>();

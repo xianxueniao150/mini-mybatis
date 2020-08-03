@@ -2,6 +2,7 @@ package com.bowen.mybatis;
 
 import com.bowen.mybatis.entity.Configuration;
 import com.bowen.mybatis.entity.MappedStatement;
+import com.bowen.mybatis.executor.Executor;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -17,12 +18,12 @@ import java.util.Collection;
 public class MapperProxy<T> implements InvocationHandler {
 
     private Class<T> target;
-    private SimpleExecutor simpleExecutor;
+    private Executor executor;
     private Configuration configuration;
 
     public  MapperProxy(Class<T> target, Configuration configuration) {
         this.target = target;
-        this.simpleExecutor=new SimpleExecutor(configuration);
+        this.executor =configuration.newExecutor();
         this.configuration=configuration;
     }
 
@@ -69,19 +70,19 @@ public class MapperProxy<T> implements InvocationHandler {
                 // 如果返回的是list，应该调用查询多个结果的方法，否则只要查单条记录
                 if (Collection.class.isAssignableFrom(returnType)) {
                     //ID为mapper类全名+方法名
-                    result = simpleExecutor.selectList(ms, args);
+                    result = executor.selectList(ms, args);
                 } else {
 //                    result = sqlSession.selectOne(statementId, args);
-                    result = simpleExecutor.selectOne(ms, args);
+                    result = executor.selectOne(ms, args);
                 }
                 break;
             }
             case UPDATE: {
-                result =simpleExecutor.update(ms,args);
+                result = executor.update(ms,args);
                 break;
             }
             case INSERT: {
-                result =simpleExecutor.update(ms,args);
+                result = executor.update(ms,args);
                 break;
             }
             default: {

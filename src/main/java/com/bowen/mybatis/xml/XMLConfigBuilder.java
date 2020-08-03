@@ -4,7 +4,9 @@ import com.bowen.mybatis.constant.Constant;
 import com.bowen.mybatis.entity.Configuration;
 import com.bowen.mybatis.entity.MyDataSource;
 import com.bowen.mybatis.entity.TypeHandlerRegistry;
+import com.bowen.mybatis.plugin.Interceptor;
 import com.bowen.mybatis.util.ClassUtil;
+import com.bowen.mybatis.util.ReflectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -67,9 +69,21 @@ public class XMLConfigBuilder {
                 case "mappers"  :
                     mapperElement(element);
                     break;
+                case "plugins" :
+                    pluginElement(element);
                 default:
                     break;
             }
+        }
+    }
+
+    private void pluginElement(Element element) {
+        Iterator<Element> plugin = element.elementIterator("plugin");
+        while(plugin.hasNext()){
+            Element plugEle = plugin.next();
+            String interceptor = plugEle.attributeValue("interceptor");
+            Interceptor interceptorClass = (Interceptor) ReflectionUtil.newInstance(interceptor);
+            configuration.addInterceptor(interceptorClass);
         }
     }
 

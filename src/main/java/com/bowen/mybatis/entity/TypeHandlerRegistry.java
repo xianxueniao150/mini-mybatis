@@ -57,6 +57,10 @@ public class TypeHandlerRegistry {
         }
     }
 
+    public  <T> TypeHandler<T> getTypeHandler(Type type) {
+        return getTypeHandler(type,null);
+    }
+
     @SuppressWarnings("unchecked")
     public  <T> TypeHandler<T> getTypeHandler(Type type, JdbcType jdbcType) {
         Map<JdbcType, TypeHandler<?>> jdbcHandlerMap = typeHandlerMap.get(type);
@@ -70,6 +74,8 @@ public class TypeHandlerRegistry {
             }else{
                 handler = pickSoleHandler(jdbcHandlerMap);
             }
+        }else{
+            handler=OBJECT_TYPE_HANDLER;
         }
         // type drives generics here
         return (TypeHandler<T>) handler;

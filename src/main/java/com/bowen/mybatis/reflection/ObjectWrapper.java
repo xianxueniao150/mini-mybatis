@@ -2,6 +2,11 @@ package com.bowen.mybatis.reflection;
 
 public interface ObjectWrapper {
 
-  Object get(String propName);
+  Object getBeanProperty(String propName);
 
+  String findProperty(String propertyName);
+
+  void set(String property, Object value);
+
+  Class<?> getSetterType(String property);
 }

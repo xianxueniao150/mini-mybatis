@@ -6,7 +6,7 @@
 	</select>
 	
 	<select id="getAll" resultType="test.bean.User">
-		select * from user
+		select * from user where id = #{id} and name = #{name}
 	</select>
 
 	<select id="getUserByMap" resultType="test.bean.User">

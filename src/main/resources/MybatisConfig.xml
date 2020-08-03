@@ -7,6 +7,10 @@
                 handler="test.MyTypeHandler"/>
     </typeHandlers>
 
+    <plugins>
+        <plugin interceptor="test.MyInterceptor"></plugin>
+    </plugins>
+
     <!-- 配置环境 -->
     <environments default="mysql">
                 <!-- 配置连接数据库的4个基本信息 -->

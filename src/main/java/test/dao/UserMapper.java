@@ -27,7 +27,7 @@ public interface UserMapper{
      * @return 
      * @see 
      */
-    List<User> getAll();
+    List<User> getAll(User user);
 
 
     Integer addUser(User user);

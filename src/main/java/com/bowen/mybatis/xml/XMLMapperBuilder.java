@@ -87,7 +87,6 @@ public class XMLMapperBuilder {
             statement.setSql(sql);
 
             configuration.addMappedStatement(sqlId, statement);
-            log.debug("statement:{}", statement);
         }
     }
 }
